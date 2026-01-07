@@ -1,0 +1,14 @@
+node_modules
+.DS_Store
+dist
+dist-ssr
+*.local
+# IDE (JetBrains)
+.idea/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# 빌드 결과물 추가
+build/
