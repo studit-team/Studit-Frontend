@@ -12,6 +12,7 @@ import './charts/ChartjsConfig';
 // Import pages
 import Dashboard from './pages/Dashboard';
 import Test from "./pages/Test.jsx";
+import ConnectTest from "./pages/ConncetTest.jsx";
 
 function App() {
 
@@ -28,6 +29,7 @@ function App() {
       <Routes>
         <Route exact path="/" element={<Dashboard />} />
         <Route exact path="/test" element={<Test />} />
+        <Route exact path="/connect-test" element={<ConnectTest />} />
       </Routes>
     </>
   );
