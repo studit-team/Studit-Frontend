@@ -21,6 +21,7 @@ import StudyNotice from "./pages/study/StudyNotice.jsx";
 import StudySchedule from "./pages/study/StudySchedule.jsx";
 import StudyAssignment from "./pages/study/StudyAssignment.jsx";
 import StudyFreeBoard from "./pages/study/StudyFreeBoard.jsx";
+import SingupPage from "./pages/user/SingupPage.jsx";
 
 function App() {
 
@@ -46,6 +47,7 @@ function App() {
           <Route path="assignment" element={<StudyAssignment />} />
           <Route path="free" element={<StudyFreeBoard />} />
         </Route>
+        <Route exact path="/user/singup" element={<SingupPage />} />
       </Routes>
     </>
   );
