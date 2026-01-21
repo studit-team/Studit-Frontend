@@ -6,7 +6,7 @@ function ConnectTest() {
     const [status, setStatus] = useState('연결 시도 중...');
 
     useEffect(() => {
-        // Vite 프록시 설정(/api)을 이용한 호출
+        // Vite 프록시 설정(/api)을 용한 호출
         axios.get('/api/studies/test')
             .then(response => {
                 console.log('수신 데이터:', response.data);
