@@ -1,68 +1,131 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Sidebar from '../../partials/Sidebar';
-import Header from '../../partials/Header';
+import axios from 'axios';
 
 function SingupPage() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const navigate = useNavigate();
+    const [formData, setFormData] = useState({
+        username: '',
+        email: '',
+        password: '',
+        passwordConfirm: '', // 추가
+        phone: ''
+    });
+
+    const handleChange = (e) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value
+        });
+    };
+
+    const handleSignup = async (e) => {
+        e.preventDefault();
+
+        // 비밀번호 확인 검증
+        if (formData.password !== formData.passwordConfirm) {
+            alert('비밀번호가 일치하지 않습니다.');
+            return;
+        }
+
+        try {
+            // URL 오타 수정: singup → signup
+            const response = await axios.post('http://localhost:8080/api/auth/singup', formData);
+
+            if (response.data.success) {
+                alert('회원가입이 완료되었습니다! 로그인해 주세요.');
+                navigate('/');
+            } else {
+                alert(response.data.message || '회원가입에 실패했습니다.');
+            }
+        } catch (error) {
+            console.error('회원가입 에러:', error);
+            const errorMessage = error.response?.data?.message || '회원가입에 실패했습니다. 다시 시도해 주세요.';
+            alert(errorMessage);
+        }
+    };
 
     return (
         <div className="flex h-screen overflow-hidden">
             <div className="relative flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
                 <main className="grow">
                     <div className="px-4 sm:px-6 lg:px-8 py-12 w-full max-w-[400px] mx-auto">
-
-                        {/* 상단 로고 및 제목 */}
                         <div className="text-center mb-10">
                             <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2">회원가입</h1>
                             <p className="text-sm text-gray-500">나의 온라인 사수, 스터딧</p>
                         </div>
 
-                        {/* 회원가입 폼 */}
-                        <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
+                        <form className="space-y-5" onSubmit={handleSignup}>
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">이름</label>
+                                <input
+                                    type="text"
+                                    name="username"
+                                    value={formData.username}
+                                    onChange={handleChange}
+                                    placeholder="이름을 입력하세요"
+                                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-violet-500 outline-none transition-all dark:bg-gray-800 dark:text-white"
+                                    required
+                                />
+                            </div>
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">이메일</label>
                                 <input
                                     type="email"
+                                    name="email"
+                                    value={formData.email}
+                                    onChange={handleChange}
                                     placeholder="example@studit.com"
-                                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-md focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all dark:bg-gray-800"
+                                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-violet-500 outline-none transition-all dark:bg-gray-800 dark:text-white"
+                                    required
                                 />
                             </div>
-
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">비밀번호</label>
-                                <div className="relative">
-                                    <input
-                                        type="password"
-                                        placeholder="********"
-                                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-md focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all dark:bg-gray-800"
-                                    />
-                                    <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
-                                        <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
-                                    </button>
-                                </div>
-                                <ul className="mt-2 space-y-1 text-[11px] text-gray-500">
-                                    <li className="flex items-center">✓ 영문/숫자/특수문자 중, 2가지 이상 포함</li>
-                                    <li className="flex items-center">✓ 8자 이상 32자 이하 입력 (공백 제외)</li>
-                                </ul>
+                                <input
+                                    type="password"
+                                    name="password"
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                    placeholder="••••••••"
+                                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-violet-500 outline-none transition-all dark:bg-gray-800 dark:text-white"
+                                    required
+                                />
                             </div>
-
+                            {/* 비밀번호 확인 필드 추가 */}
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">비밀번호 확인</label>
                                 <input
                                     type="password"
-                                    placeholder="********"
-                                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-md focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all dark:bg-gray-800"
+                                    name="passwordConfirm"
+                                    value={formData.passwordConfirm}
+                                    onChange={handleChange}
+                                    placeholder="••••••••"
+                                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-violet-500 outline-none transition-all dark:bg-gray-800 dark:text-white"
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">전화번호</label>
+                                <input
+                                    type="text"
+                                    name="phone"
+                                    value={formData.phone}
+                                    onChange={handleChange}
+                                    placeholder="010-0000-0000"
+                                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-violet-500 outline-none transition-all dark:bg-gray-800 dark:text-white"
                                 />
                             </div>
 
-                            <button className="w-full py-3 bg-violet-600 hover:bg-violet-700 text-white font-bold rounded-md transition-colors shadow-sm">
+                            <button
+                                type="submit"
+                                className="w-full py-3 bg-violet-600 hover:bg-violet-700 text-white font-bold rounded-xl shadow-lg transition-all duration-200 transform hover:-translate-y-0.5"
+                            >
                                 가입하기
                             </button>
                         </form>
 
-                        {/* 간편 회원가입 구분선 */}
                         <div className="mt-8 mb-6">
                             <div className="relative flex items-center justify-center">
                                 <div className="absolute inset-0 flex items-center">
@@ -72,7 +135,6 @@ function SingupPage() {
                             </div>
                         </div>
 
-                        {/* 소셜 버튼 4종 (이미지 스타일 적용) */}
                         <div className="flex items-center justify-center gap-4">
                             <button className="w-12 h-12 flex items-center justify-center bg-gray-50 border border-gray-100 rounded-xl shadow-sm hover:bg-white transition-all">
                                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-6 h-6" alt="Google" />
