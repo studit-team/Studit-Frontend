@@ -1,39 +1,78 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import axios from "axios";
 
 function StudyFreeBoard() {
-    const posts = [
-        { id: 1, author: "김자바", content: "오늘 공부한 람다식 정리해서 블로그에 올렸어요! 다들 확인해보세요.", likes: 3, comments: 2, date: "1시간 전" },
-        { id: 2, author: "이코드", content: "스터디 장소 근처에 맛있는 카페 찾았습니다. 모임 끝나고 가실 분?", likes: 5, comments: 4, date: "5시간 전" },
-    ];
+    const { studyId } = useParams();
+    const [posts, setPosts] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchPosts = async () => {
+            try {
+                setIsLoading(true);
+                // URL 오타 수정: bord -> board
+                const response = await axios.get(`/api/studies/${studyId}/board/list`);
+                setPosts(response.data);
+            } catch (error) {
+                console.error("❌ 게시판 데이터 호출 실패:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        if (studyId) fetchPosts();
+    }, [studyId]);
+
+    if (isLoading) return <div className="text-center p-10">게시글을 불러오는 중...</div>;
 
     return (
         <div className="space-y-4">
             <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-bold text-gray-800 dark:text-white">자유 게시판</h2>
-                <button className="btn bg-violet-600 text-white text-sm shadow-md shadow-violet-200">글쓰기</button>
+                <button className="px-4 py-2 bg-violet-600 text-white text-sm font-bold rounded-lg shadow-md shadow-violet-200 hover:bg-violet-700 transition-colors">
+                    글쓰기
+                </button>
             </div>
 
             <div className="space-y-4">
                 {posts.map((p) => (
-                    <div key={p.id} className="bg-white dark:bg-gray-800 p-5 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-violet-300 transition-colors cursor-pointer">
+                    <div key={p.boardId} className="bg-white dark:bg-gray-800 p-5 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-violet-300 transition-colors cursor-pointer shadow-sm">
                         <div className="flex items-center mb-3">
-                            <div className="w-9 h-9 bg-gray-100 rounded-full mr-3 overflow-hidden">
-                                <img src={`https://ui-avatars.com/api/?name=${p.author}`} alt="avatar" />
+                            {/* 아바타: username를 기반으로 생성하거나 기본 이미지 표시 */}
+                            <div className="w-9 h-9 bg-gray-100 rounded-full mr-3 overflow-hidden border border-gray-200">
+                                <img
+                                    src={`https://ui-avatars.com/api/?name=${p.username}&background=random`}
+                                    alt="avatar"
+                                />
                             </div>
                             <div>
-                                <div className="text-sm font-bold dark:text-white">{p.author}</div>
-                                <div className="text-xs text-gray-400">{p.date}</div>
+                                {/* 데이터 필드에 맞춰 username를 createdAt(null 처리) 적용 */}
+                                <div className="text-sm font-bold dark:text-white">{p.username}</div>
+                                <div className="text-xs text-gray-400">
+                                    {p.createdAt ? new Date(p.createdAt).toLocaleDateString() : "작성일 없음"}
+                                </div>
                             </div>
                         </div>
-                        <p className="text-gray-700 dark:text-gray-300 text-sm mb-4 leading-relaxed">
-                            {p.content}
-                        </p>
-                        <div className="flex items-center gap-4 text-xs text-gray-400 font-medium border-t border-gray-50 dark:border-gray-700 pt-3">
-                            <span className="flex items-center gap-1 hover:text-violet-600 transition">❤️ {p.likes}</span>
-                            <span className="flex items-center gap-1 hover:text-violet-600 transition">💬 {p.comments}</span>
+
+                        {/* 게시글 제목 (현재 데이터에 content가 없으므로 title을 메인으로 표시) */}
+                        <h3 className="text-gray-800 dark:text-gray-200 font-medium text-sm mb-2">
+                            {p.title}
+                        </h3>
+
+                        {/* 게시판 타입 표시 (FREE 등) */}
+                        <div className="flex items-center gap-4 text-xs font-medium pt-3 border-t border-gray-50 dark:border-gray-700">
+                            <span className="text-violet-500 bg-violet-50 dark:bg-violet-900/20 px-2 py-0.5 rounded">
+                                #{p.boardTyCd}
+                            </span>
                         </div>
                     </div>
                 ))}
+
+                {posts.length === 0 && (
+                    <div className="text-center py-20 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-dashed border-gray-300 dark:border-gray-700 text-gray-500">
+                        첫 번째 게시글을 남겨보세요!
+                    </div>
+                )}
             </div>
         </div>
     );
