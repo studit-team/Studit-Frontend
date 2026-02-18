@@ -23,6 +23,7 @@ import StudyAssignment from "./pages/study/StudyAssignment.jsx";
 import StudyFreeBoard from "./pages/study/StudyFreeBoard.jsx";
 import SingupPage from "./pages/user/SingupPage.jsx";
 import StudyCreatePage from "./pages/study/StudyCreatePage.jsx";
+import FindPasswordPage from "./pages/user/findPassword.jsx";
 
 function App() {
 
@@ -50,6 +51,7 @@ function App() {
           <Route path="free" element={<StudyFreeBoard />} />
         </Route>
         <Route exact path="/user/singup" element={<SingupPage />} />
+        <Route exact path="/user/forgot-password" element={<FindPasswordPage />} />
       </Routes>
     </>
   );
